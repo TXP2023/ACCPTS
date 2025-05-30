@@ -14,11 +14,14 @@
 #include <time.h>
 #include <iostream>
 #include <stdint.h>
+#include <map>
 
 #define READ          false
 #define MAX_INF       1e18
 #define MAX_NUM_SIZE  35
-#define MAX_LENGTH    (uint64_t)(1e5+5)
+#define MAXN          (uint64_t)(1e5+5)
+#define LS(x)         ((x) << 1)
+#define RS(x)         ((x) << 1 | 1)
 
 typedef long long int ll;
 typedef unsigned long long int unill;
@@ -36,75 +39,126 @@ inline Type readf(Type* p = nullptr);
 template<typename Type>
 inline void writef(Type x);
 
-char str[MAX_LENGTH], reverseStr[MAX_LENGTH], manacherStr[MAX_LENGTH * 2 + 3];
-size_t firstLength[MAX_LENGTH], radius[MAX_LENGTH], lastLength[MAX_LENGTH];
-size_t strLength, manacherLength, ans = 0;
+std::map<ll, ll> mapping;
+ll preSum[MAXN], arr[MAXN], segTree[MAXN << 2], disArr[MAXN];
+ll n, valMax, valMin, dis_size, ans = 0;
 
-inline size_t init() {
-    strLength = strlen(str + 1);
-    size_t cnt = 0;
-    manacherStr[cnt++] = '@';
-    for (size_t i = 1; i <= strLength; i++) {
-        reverseStr[strLength - i + 1] = str[i];
-        manacherStr[cnt++] = '#';
-        manacherStr[cnt++] = str[i];
+inline size_t discretization() {
+    memcpy(disArr + 1, preSum + 1, (n + 1) * 8);
+    std::sort(disArr + 1, disArr + n + 2);
+    size_t cnt = std::unique(disArr + 1, disArr + n + 2) - disArr - 1;
+    for (size_t i = 1; i <= cnt; i++) {
+        mapping[disArr[i]] = i;
     }
-    manacherStr[cnt++] = '#';
-    manacherStr[cnt] = '$';
     return cnt;
 }
 
-inline void manacher() {
-    radius[1] = 1;
-    for (size_t i = 2, right_pos = 1, left_pos; i < manacherLength; i++) {
-        size_t pre_length = i / 2;
-        if (i <= right_pos) {
-            radius[i] = std::min(
-                radius[right_pos - i + left_pos],
-                right_pos - i + 1
-            );
-
-        }
-        //暴力往外拓展
-        while (manacherStr[i - radius[i]] == manacherStr[i + radius[i]]) {
-            ++radius[i];
-        }
-        if (manacherStr[i] == '#') {
-            firstLength[pre_length - (radius[i] - 1) / 2 + 1] = std::max(firstLength[pre_length - (radius[i] - 1) / 2 + 1], radius[i] - 1);
-            lastLength[pre_length + (radius[i] - 1) / 2] = std::max(lastLength[pre_length + (radius[i] - 1) / 2], radius[i] - 1);
-        }
-        else {
-            firstLength[pre_length - (radius[i] - 1) / 2] = std::max(firstLength[pre_length - (radius[i] - 1) / 2], radius[i] - 1);
-            lastLength[pre_length + (radius[i] - 1) / 2] = std::max(lastLength[pre_length + (radius[i] - 1) / 2], radius[i] - 1);
-        }
-        if (i + radius[i] - 1 > right_pos) {
-            right_pos = i + radius[i] - 1, left_pos = i - radius[i] + 1;
-        }
+void insert(size_t pos, size_t left, size_t right, ll val) {
+    ++segTree[pos];
+    if (left == right) {
+        return;
+    }
+    size_t mid = (left + right) >> 1;
+    if (val <= mid) {
+        insert(LS(pos), left, mid, val);
+    }
+    else {
+        insert(RS(pos), mid + 1, right, val);
     }
     return;
 }
 
+ll query(size_t pos, size_t left, size_t right, ll valFirst, ll valLast) {
+    if (valFirst > valLast) {
+        return 0;
+    }
+    if (valFirst <= left && right <= valLast) {
+        return segTree[pos];
+    }
+    ll sum = 0, mid = (left + right) >> 1;
+    if (valFirst <= mid) {
+        sum += query(LS(pos), left, mid, valFirst, valLast);
+    }
+    if (valLast > mid) {
+        sum += query(RS(pos), mid + 1, right, valFirst, valLast);
+    }
+    return sum;
+}
+
+inline size_t small_bound(ll val) {
+    int res = -1, left = 1, right = dis_size;
+    while (left <= right) {
+        int mid = (left + right) >> 1;
+        if (disArr[mid] <= val) {
+            res = mid;
+            left = mid + 1;
+        }
+        else {
+            right = mid - 1;
+        }
+    }
+    return res;
+}
+
+inline size_t big_bound(ll val) {
+    int res = -1, left = 1, right = dis_size;
+    while (left <= right) {
+        int mid = (left + right) >> 1;
+        if (disArr[mid] >= val) {
+            res = mid;
+            right = mid - 1;
+        }
+        else {
+            left = mid + 1;
+        }
+    }
+    return res;
+}
+
+#define DEBUG false
+
 int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
+#ifdef _FREOPEN
+    freopen("input.txt", "r", stdin);
+#endif // _FREOPEN
 
 #ifdef _RUN_TIME
     clock_t start = clock();
 #endif // _RUN_TIME
 
-    scanf("%s", str + 1);
+    readf(&n), readf(&valMin), readf(&valMax);
 
-    manacherLength = init();
+    for (size_t i = 1; i <= n; i++) {
+        readf(&arr[i]);
+        preSum[i] = preSum[i - 1] + arr[i];
+    }
 
-    manacher();
+    dis_size = discretization();
 
-    lastLength[0] = 0;
-    firstLength[strLength + 1] = 0;
-    for (size_t i = 0; i <= strLength; i++) {
-        if (str[i] != reverseStr[i] && i != 0) {
-            break;
+    insert(1, 1, dis_size, mapping[0]);
+    //这个代码现在到9之前没问题
+    for (size_t i = 1; i <= n; i++) {
+        insert(1, 1, dis_size, mapping[preSum[i]]);
+#if DEBUG
+        printf("%lld\n", mapping[preSum[i]]);
+#endif // DEBUG
+
+        ll max = preSum[i] - valMin, min = preSum[i] - valMax;
+        max = small_bound(max);
+        min = big_bound(min);
+        if (max == -1 || min == -1) {
+            continue;
         }
-        ans = std::max(ans, std::max(i * 2 + firstLength[i + 1], i * 2 + lastLength[strLength - i]));
+        ans += query(
+            1, 1, dis_size,
+            min,
+            max
+        );
+        //0 1 2 3  4  5
+        //0 1 3 6 10 15
+        //0 1 2 3  4  5
     }
 
     printf("%lld\n", ans);
@@ -158,3 +212,26 @@ inline void writef(Type x) {
     while (top) putchar(sta[--top] + '0');  // 48 是 '0'
     return;
 }
+
+
+
+/**
+ *              ,----------------,              ,---------,
+ *         ,-----------------------,          ,"        ,"|
+ *       ,"                      ,"|        ,"        ,"  |
+ *      +-----------------------+  |      ,"        ,"    |
+ *      |  .-----------------.  |  |     +---------+      |
+ *      |  |                 |  |  |     | -==----'|      |
+ *      |  |  By txp2024     |  |  |     |         |      |
+ *      |  |                 |  |  |     |`---=    |      |
+ *      |  |  C:\>_          |  |  |     |==== ooo |      ;
+ *      |  |                 |  |  |     |(((( [33]|    ,"
+ *      |  `-----------------'  | /      |((((     |  ,"
+ *      +-----------------------+/       |         |,"
+ *         /_)______________(_/          +---------+
+ *    _______________________________
+ *   /  oooooooooooooooo  .o.  oooo /,   /-----------
+ *  / ==ooooooooooooooo==.o.  ooo= //   /\--{)B     ,"
+ * /_==__==========__==_ooo__ooo=_/'   /___________,"
+ *
+ */
