@@ -5,10 +5,18 @@
 #include <Windows.h>
 
 #define _LPCWSTR (LPCWSTR)
+#define AUTO_PATH     true
 
 int main() {
+#if AUTO_PATH
+    system("g++ \"my_code.cpp\" -o \"my_code.exe\"");
+    system("g++ \"correct_code.cpp\" -o \"correct_code.exe\"");
+#else
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\my_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\my_code.exe\"");
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\correct_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\correct_code.exe\"");
+#endif // AUTO_PATH
+
+    
     //system("g++ correct_code.cpp -o correct_code.exe");
     printf("Proceed with run?[Y:N]");
     char ch = getchar();
@@ -23,6 +31,15 @@ int main() {
         ch = getchar();
     }
     while (true) {
+#if AUTO_PATH
+        system("python \"data.py\"");
+        system("\"correct_code.exe\"");
+        system("\"my_code.exe\"");
+        if (system("fc /W \"output.txt\" \"ans.txt\"")) {
+            MessageBox(NULL, _LPCWSTR "End of Test\n There are differences in the output file", _LPCWSTR "message", NULL);
+            exit(0);
+        }
+#else
         system("python \"D:\\bobi2\\development\\work spaces\\test\\data.py\"");
         system("\"D:\\bobi2\\development\\work spaces\\test\\correct_code.exe\"");
         system("\"D:\\bobi2\\development\\work spaces\\test\\my_code.exe\"");
@@ -30,6 +47,8 @@ int main() {
             MessageBox(NULL, _LPCWSTR "End of Test\n There are differences in the output file", _LPCWSTR "message", NULL);
             exit(0);
         }
+#endif // AUTO_PATH
+
     }
 
 }
