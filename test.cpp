@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <Windows.h>
+#include <tchar.h>
 
 #define _LPCWSTR (LPCWSTR)
 #define AUTO_PATH     true
@@ -24,7 +25,7 @@ int main() {
         if (ch == 'N') {
             exit(0);
         }
-        if (ch == 'Y') {
+        if (ch == 'Y' || ch == 'y') {
             break;
         }
         printf("Proceed with run?[Y:N]");
@@ -36,8 +37,9 @@ int main() {
         system("\"correct_code.exe\"");
         system("\"my_code.exe\"");
         if (system("fc /W \"output.txt\" \"ans.txt\"")) {
-            MessageBox(NULL, _LPCWSTR "End of Test\n There are differences in the output file", _LPCWSTR "message", NULL);
-            exit(0);
+            if (MessageBox(NULL, _T("测试暂停 出现异常数据. 是否结束对拍？"), _T("Message"), MB_YESNO | MB_ICONASTERISK) == IDYES) {
+                exit(0);
+            }
         }
 #else
         system("python \"D:\\bobi2\\development\\work spaces\\test\\data.py\"");
