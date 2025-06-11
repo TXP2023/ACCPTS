@@ -3,8 +3,7 @@
 //这里写正确的代码的main函数前头的部分
 
 int main() {
-    freopen("input.txt", "r", stdin);
-    freopen("ans.txt", "w", stdout);
+    
     
     //具体代码
     puts("a");
