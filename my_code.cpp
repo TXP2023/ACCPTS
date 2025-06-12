@@ -112,8 +112,6 @@ inline ll query(size_t _First, size_t _Last, ll _Val) {
 }
 
 int main() {
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
 #ifdef _FREOPEN
     freopen("input.txt", "r", stdin);
 #endif // _FREOPEN
@@ -148,7 +146,7 @@ int main() {
         else {
             size_t first = readf<size_t>(), last = readf<size_t>();
             ll val = readf<ll>();
-            printf("%lld\n", query(first, last, val));
+            printf("%lld\n", query(first + 1, last, val));
 
         }
         //puts("Debug");

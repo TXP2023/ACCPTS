@@ -85,8 +85,6 @@ int query() {
 }
 
 int main() {
-    freopen("input.txt", "r", stdin);
-    freopen("ans.txt", "w", stdout);
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);
     cin >> n >> q;

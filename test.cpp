@@ -10,14 +10,14 @@
 
 int main() {
 #if AUTO_PATH
-    system("g++ \"my_code.cpp\" -o \"my_code.exe\"");
-    system("g++ \"correct_code.cpp\" -o \"correct_code.exe\"");
+    system("g++ my_code.cpp -o my_code.exe");
+    system("g++ correct_code.cpp -o correct_code.exe");
 #else
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\my_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\my_code.exe\"");
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\correct_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\correct_code.exe\"");
 #endif // AUTO_PATH
 
-    
+
     //system("g++ correct_code.cpp -o correct_code.exe");
     printf("Proceed with run?[Y:N]");
     char ch = getchar();
@@ -34,8 +34,8 @@ int main() {
     while (true) {
 #if AUTO_PATH
         system("python \"data.py\"");
-        system("\"correct_code.exe\"");
-        system("\"my_code.exe\"");
+        system("correct_code.exe < input.txt > ans.txt");
+        system("my_code.exe < input.txt > output.txt");
         if (system("fc /W \"output.txt\" \"ans.txt\"")) {
             if (MessageBox(NULL, _T("测试暂停 出现异常数据. 是否结束对拍？"), _T("Message"), MB_YESNO | MB_ICONASTERISK) == IDYES) {
                 exit(0);
