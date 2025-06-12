@@ -10,8 +10,10 @@
 
 int main() {
 #if AUTO_PATH
+    //编译C++源代码并试运行随机数据Python文件
     system("g++ my_code.cpp -o my_code.exe");
     system("g++ correct_code.cpp -o correct_code.exe");
+    system("python data.py > input.txt");
 #else
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\my_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\my_code.exe\"");
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\correct_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\correct_code.exe\"");
@@ -22,7 +24,7 @@ int main() {
     printf("Proceed with run?[Y:N]");
     char ch = getchar();
     while (true) {
-        if (ch == 'N') {
+        if (ch == 'N' || ch == 'n') {
             exit(0);
         }
         if (ch == 'Y' || ch == 'y') {
