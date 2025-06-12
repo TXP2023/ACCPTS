@@ -33,7 +33,8 @@ int main() {
     }
     while (true) {
 #if AUTO_PATH
-        system("python \"data.py\"");
+        //system("python \"data.py\"");
+        system("python data.py > input.txt");
         system("correct_code.exe < input.txt > ans.txt");
         system("my_code.exe < input.txt > output.txt");
         if (system("fc /W \"output.txt\" \"ans.txt\"")) {
