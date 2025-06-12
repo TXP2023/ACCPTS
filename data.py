@@ -3,7 +3,7 @@ import random
 def generate_random_data():
    
     N = random.randint(10, 15)
-    Q = random.randint(1, 10) 
+    Q = random.randint(1, 5) 
     
     a = [random.randint(1, 20) for _ in range(N)]
     
