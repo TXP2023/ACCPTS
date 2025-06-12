@@ -11,7 +11,9 @@
 int main() {
 #if AUTO_PATH
     system("g++ \"my_code.cpp\" -o \"my_code.exe\"");
+    system(" my_code.exe < input.txt > output.txt");
     system("g++ \"correct_code.cpp\" -o \"correct_code.exe\"");
+    system(" correct_code.exe < input.txt > ans.txt");
 #else
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\my_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\my_code.exe\"");
     system("g++ \"D:\\bobi2\\development\\work spaces\\test\\correct_code.cpp\" -o \"D:\\bobi2\\development\\work spaces\\test\\correct_code.exe\"");
