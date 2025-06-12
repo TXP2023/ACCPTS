@@ -6,4 +6,3 @@ int main() {
     //¾ßÌå´úÂë
     
     return 0;
-}
