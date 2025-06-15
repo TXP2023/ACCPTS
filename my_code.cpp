@@ -262,8 +262,15 @@ int main() {
     set_init();
     build_max_tree();
 
-    tree_init(1, 0, 1);
-    tree_init_heavy_chain(1, 1, 0, cnt);
+    for (size_t i = 1; i <= n; i++) {
+        if (!id[i]) {
+            tree_init(i, 0, 1);
+            tree_init_heavy_chain(i, i, 0, cnt);
+        }
+    }
+
+    //tree_init(1, 0, 1);
+    //tree_init_heavy_chain(1, 1, 0, cnt);
 
     for (size_t i = 1; i <= tree_cnt; i += 2) {
         ll u = tree[i].u, v = tree[i].v;
