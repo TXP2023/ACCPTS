@@ -1,61 +1,77 @@
-#include <cstdio>
-#include <iostream>
-#include <algorithm>
-#include <cstring>
-#include <string>
-#include <cmath>
-#include <cstdlib>
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#define R register int
 using namespace std;
-int t, n, f[1000007], book[1000007 * 3];  //t表示t组数据，n表示有n个操作，f[]是我们并查集的数字，book[]是离散化的数组 
-struct node {
-    int x, y, e;
-}a[1000001];
-bool cmp(node a, node b) {
-    return a.e > b.e;
-}//排 序将e==1的放在前面 
-inline void first(int kkk) {
-    for (int i = 1; i <= kkk; i++)  f[i] = i;
-}//初 始 化 
-int get(int x) {
-    if (x == f[x]) return x;
-    return f[x] = get(f[x]);
+inline int read()
+{
+	int f = 1, x = 0; char ch = getchar();
+	while (ch < '0' || ch>'9') { if (ch == '-') f = -1; ch = getchar(); }
+	while (ch <= '9' && ch >= '0') x = x * 10 + ch - '0', ch = getchar();
+	return f * x;
 }
-int main() {
-    scanf("%d", &t);
-    while (t--) {
-        int tot = -1;
-        memset(book, 0, sizeof(book));
-        memset(a, 0, sizeof(a));
-        memset(f, 0, sizeof(f));
-        int flag = 1;
-        scanf("%d", &n);
-
-        for (int i = 1; i <= n; i++) {
-            scanf("%d %d %d", &a[i].x, &a[i].y, &a[i].e);
-            book[++tot] = a[i].x;
-            book[++tot] = a[i].y;
-        }
-        sort(book, book + tot);//排序 
-        int reu = unique(book, book + tot) - book;  //去重 
-        for (int i = 1; i <= n; ++i) {
-            a[i].x = lower_bound(book, book + reu, a[i].x) - book;
-            a[i].y = lower_bound(book, book + reu, a[i].y) - book;
-        }
-        first(reu);   //初始化 
-        sort(a + 1, a + n + 1, cmp);  //按e排序 
-        for (int i = 1; i <= n; i++) {
-            int r1 = get(a[i].x);
-            int r2 = get(a[i].y);
-            if (a[i].e) {
-                f[r1] = r2;  //就是我们的merge操作 
-            }
-            else if (r1 == r2) {
-                printf("NO\n");
-                flag = 0;  //如果不满足条件，标记为否 
-                break;
-            }
-        }
-        if (flag)    printf("YES\n");   //都满足条件了 
-    }
-    return 0;
+const int maxn = 100005;
+struct Data
+{
+	int x, y, e;
+}a[maxn];
+inline bool cmp(Data x, Data y)
+{
+	return x.e > y.e;
+}
+int t, n, f[maxn], b[maxn << 2];//b数组至少要开两倍大小（虽然我开了4倍），因为刚开始要同时记录两个值
+inline int find(int x)
+{
+	return x == f[x] ? x : f[x] = find(f[x]);
+}
+int main()
+{
+	t = read();
+	while (t--)
+	{
+		memset(a, 0, sizeof(a));
+		memset(b, 0, sizeof(b));
+		memset(f, 0, sizeof(f));
+		n = read(); int tot = 0;
+		for (R i = 1; i <= n; ++i)
+		{
+			a[i].x = read(); a[i].y = read(); a[i].e = read();
+			b[++tot] = a[i].x;//记录这些值
+			b[++tot] = a[i].y;
+		}
+		sort(b + 1, b + 1 + tot);
+		int tott = unique(b + 1, b + 1 + tot) - b;//algorithm中的函数，把数组去重，然后返回末尾指针。这里减一个b就可以表示b现在的大小了
+		for (R i = 1; i <= n; ++i)
+		{
+			a[i].x = lower_bound(b + 1, b + 1 + tott, a[i].x) - b;//十分实用的lower_bound，寻找b中>=a[i].x的第一个数的指针（因为a[i].x在b中一定存在，所以是直接求出a[i].x离散化后对应的值），减去b就是它的位置。
+			a[i].y = lower_bound(b + 1, b + 1 + tott, a[i].y) - b;
+		}
+		//--------------以下为正常操作
+		for (R i = 1; i <= tott; ++i) f[i] = i;
+		sort(a + 1, a + 1 + n, cmp);
+		bool ff = true;
+		for (R i = 1; i <= n; ++i)
+		{
+			if (a[i].e == 1)
+			{
+				int f1 = find(a[i].x), f2 = find(a[i].y);
+				if (f1 != f2)
+				{
+					f[f1] = f2;
+				}
+			}
+			else {
+				int f1 = find(a[i].x), f2 = find(a[i].y);
+				if (f1 == f2)
+				{
+					ff = false;//找到一个不合理就可以退出了
+					break;
+				}
+			}
+		}
+		if (ff == true) printf("YES\n");
+		else printf("NO\n");
+	}
+	return 0;
 }

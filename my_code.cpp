@@ -15,11 +15,12 @@
 #include <time.h>
 #include <iostream>
 #include <stdint.h>
+#include <map>
 
 #define READ          false
 #define MAX_INF       1e18
 #define MAX_NUM_SIZE  35
-#define MAXN          (size_t)(1e5 + 5)
+#define MAXN          (size_t)(1e5)
 
 typedef long long int ll;
 typedef unsigned long long int ull;
@@ -37,8 +38,14 @@ inline Type readf(Type* p = nullptr);
 template<typename Type>
 inline void writef(Type x);
 
-ll setEq[MAXN], setNe[MAXN];
+struct Task {
+    ll u, v, opt;
+};
+
+Task tasks[MAXN + 5];
+ll setEq[MAXN + 5], setNe[MAXN + 5];
 ll t, n, m;
+std::map<ll, int> mapping;
 
 ll find(ll x, ll* _Set) {
     if (_Set[x] == x) {
@@ -58,6 +65,19 @@ inline void merge(ll x, ll y, ll* _Set) {
     return;
 }
 
+inline void Discretization() {
+    ll cnt = 0, num_cnt[MAXN * 2 + 1];
+    for (size_t i = 1; i <= m; i++) {
+        num_cnt[i * 2 - 1] = tasks[i].u;
+        num_cnt[i * 2] = tasks[i].v;
+    }
+    cnt = std::unique(num_cnt + 1, num_cnt + 1 + m * 2) - num_cnt;
+    for (size_t i = 1; i <= cnt; i++) {
+        mapping[num_cnt[i]] = i;
+    }
+    return;
+}
+
 inline bool slove() {
     //多种情况
     // 让 u！=v
@@ -65,32 +85,37 @@ inline bool slove() {
     //否则可以成立
     //让 u==v
     bool flag = true;//
-    readf(&n), readf(&m);
-    std::iota(setEq + 1, setEq + 1 + n, 1);
-    std::iota(setNe + 1, setNe + 1 + n, 1);
-    for (size_t i = 0; i < m; i++) {
+    readf(&m);
+    std::iota(setEq + 1, setEq + 1 + MAXN, 1);
+    std::iota(setNe + 1, setNe + 1 + MAXN, 1);
+    for (size_t i = 1; i <= m; i++) {
         ll opt, u, v;
-        if (!flag) {
-            continue;
-        }
-        readf(&opt), readf(&u), readf(&v);
+        readf(&u), readf(&v), readf(&opt);
+        tasks[i].opt = opt;
+        tasks[i].u = u;
+        tasks[i].v = v;
+    }
+    Discretization();
+    for (size_t i = 1; i <= m; i++) {
+        ll opt = tasks[i].opt, u = tasks[i].u, v = tasks[i].v;
         if (opt == 1) {
-            if (same_set(u, v, setNe)) {
+            if (same_set(mapping[u], mapping[v], setNe)) {
                 flag = false;
             }
             else {
-                merge(u, v, setEq);
+                merge(mapping[u], mapping[v], setEq);
             }
         }
         else {
-            if (same_set(u, v, setEq)) {
+            if (same_set(mapping[u], mapping[v], setEq)) {
                 flag = false;
             }
             else {
-                merge(u, v, setNe);
+                merge(mapping[u], mapping[v], setNe);
             }
         }
     }
+    mapping.clear();
     return flag;
 }
 
@@ -106,7 +131,7 @@ int main() {
     readf(&t);
 
     while (t--) {
-        puts(slove() ? "YES" : "No");
+        puts(slove() ? "YES" : "NO");
     }
 
 
