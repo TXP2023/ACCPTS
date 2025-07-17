@@ -39,9 +39,16 @@ int main() {
         system("python data.py > input.txt");
         system("correct_code.exe < input.txt > ans.txt");
         system("my_code.exe < input.txt > output.txt");
+
+
         if (system("fc /W \"output.txt\" \"ans.txt\"")) {
-            if (MessageBox(NULL, _T("测试暂停 出现异常数据. 是否结束对拍？"), _T("Message"), MB_YESNO | MB_ICONASTERISK) == IDYES) {
-                exit(0);
+            system("correct_code.exe < input.txt > ans.txt");
+            system("my_code.exe < input.txt > output.txt");
+            Sleep(2000);
+            if (system("fc /W \"output.txt\" \"ans.txt\"")) {
+                if (MessageBox(NULL, _T("测试暂停 出现异常数据. 是否结束对拍？"), _T("Message"), MB_YESNO | MB_ICONASTERISK) == IDYES) {
+                    exit(0);
+                }
             }
         }
 #else
