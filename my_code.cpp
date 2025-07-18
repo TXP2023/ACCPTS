@@ -122,7 +122,7 @@ int main() {
             }
         }
         for (size_t i = 1; i <= n; i++) {
-            if (dist[x][i][val % 2] <= val) {
+            if (dist[x][i][val % 2] <= val && dist[x][i][val % 2] != -1) {
                 printf("1 ");
             }
             else {
