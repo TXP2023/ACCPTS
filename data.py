@@ -6,9 +6,9 @@ def main():
     #random.seed(time())
     
     
-    n = random.randint(2, 100)  # 
+    n = random.randint(2, 10000)  # 
     max_edges = n * (n - 1) // 2  # 
-    m_upper = min(1000, max_edges)  
+    m_upper = min(20000, max_edges)  
     m = random.randint(n - 1, m_upper)  
     
     g = random.randint(1, 1000)  # 
